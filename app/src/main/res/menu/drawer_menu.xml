@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/program_list_screen"
+            android:contentDescription="@string/text_desc_home_drawer"
+            android:icon="@drawable/ic_home_white_24dp"
+            android:title="@string/text_home_drawer" />
+
+        <item
+            android:id="@+id/favorite_screen"
+            android:contentDescription="@string/text_desc_favorite_drawer"
+            android:icon="@drawable/ic_favorite_white_24dp"
+            android:title="@string/text_favorite_drawer" />
+
+        <item
+            android:id="@+id/history_screen"
+            android:contentDescription="@string/text_desc_history_drawer"
+            android:icon="@drawable/ic_history_white_24dp"
+            android:title="@string/text_history_drawer" />
+
+        <item
+            android:id="@+id/privacy_policy_screen"
+            android:contentDescription="@string/text_desc_privacy_policy_drawer"
+            android:icon="@drawable/ic_lock_white_24dp"
+            android:title="@string/text_privacy_policy_drawer" />
+
+        <item
+            android:id="@+id/rate_app"
+            android:contentDescription="@string/text_desc_rate_app_drawer"
+            android:icon="@drawable/ic_thumb_up_white_24dp"
+            android:title="@string/text_rate_this_app_drawer" />
+
+        <item
+            android:id="@+id/more_apps"
+            android:contentDescription="@string/text_desc_more_apps_drawer"
+            android:icon="@drawable/ic_apps_white_24dp"
+            android:title="@string/text_more_apps_drawer" />
+
+        <item
+            android:id="@+id/send_feedback_screen"
+            android:contentDescription="@string/text_desc_send_feedback_drawer"
+            android:icon="@drawable/ic_mail_white_24dp"
+            android:title="@string/text_send_feedback_drawer" />
+    </group>
+</menu>

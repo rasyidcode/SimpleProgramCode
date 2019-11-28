@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_host_home"
+    app:startDestination="@+id/program_list_screen"
+    tools:ignore="UnusedNavigation">
+    <fragment
+        android:id="@+id/program_list_screen"
+        android:name="me.jamilalrasyidis.simpleprogramcode.ui.home.ProgramListFragment"
+        tools:layout="@layout/fragment_program_list"
+        android:label="Home"/>
+    <fragment
+        android:id="@+id/history_screen"
+        android:name="me.jamilalrasyidis.simpleprogramcode.ui.home.HistoryFragment"
+        tools:layout="@layout/fragment_history"
+        android:label="History" />
+    <fragment
+        android:id="@+id/favorite_screen"
+        tools:layout="@layout/fragment_favorite"
+        android:name="me.jamilalrasyidis.simpleprogramcode.ui.home.FavoriteFragment"
+        android:label="Favorite" />
+    <fragment
+        android:id="@+id/privacy_policy_screen"
+        tools:layout="@layout/fragment_privacy_policy"
+        android:name="me.jamilalrasyidis.simpleprogramcode.ui.home.PrivacyPolicyFragment"
+        android:label="Privacy Policy" />
+    <fragment
+        android:id="@+id/send_feedback_screen"
+        android:name="me.jamilalrasyidis.simpleprogramcode.ui.home.SendFeebackFragment"
+        tools:layout="@layout/fragment_send_feedback"
+        android:label="Send Feedback" />
+</navigation>
