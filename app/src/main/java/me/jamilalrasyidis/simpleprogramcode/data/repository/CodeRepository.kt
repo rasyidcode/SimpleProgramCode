@@ -16,35 +16,59 @@ class CodeRepository(
 
     private val codeRefs by lazy { database.collection("codes") }
 
-    fun getNames(programId: String) : LiveData<List<String>> {
+    fun getNames(programId: String): LiveData<List<String>> {
         return codeDao.getNames(programId)
     }
 
-    fun getCodes(programId: String, name: String) : LiveData<String> {
+    fun getCodes(programId: String, name: String): LiveData<String> {
         return codeDao.getCodes(programId, name)
     }
 
-    fun getCodeByProgramId(programId: String) : LiveData<List<CodeEntity>> {
+    fun getCodeByProgramId(programId: String): LiveData<List<CodeEntity>> {
         return codeDao.getCodeByProgramId(programId)
+    }
+
+    suspend fun updateFavorite(isFavored: Boolean, codeId: String) {
+        codeDao.updateFavorite(isFavored, codeId)
     }
 
     suspend fun getCodes() {
         val codes = mutableListOf<CodeEntity>()
+        val codeFromDb: List<CodeEntity>? = codeDao.codes
 
         codeRefs.get().addOnSuccessListener {
-            for (document in it) {
-                codes.add(
-                    CodeEntity(
-                        id = document.id,
-                        name = document["name"].toString(),
-                        codes = document["codes"].toString(),
-                        programId = document["program_id"].toString()
+            Log.d("CodeRepository", "data size from repo : ${it.size()}")
+            if (codeFromDb?.isNotEmpty()!!) {
+                for (i in 0 until it.documents.size) {
+                    codes.add(
+                        CodeEntity(
+                            id = it.documents[i].id,
+                            name = it.documents[i]["name"].toString(),
+                            codes = it.documents[i]["codes"].toString(),
+                            programId = it.documents[i]["program_id"].toString(),
+                            isFavored = codeDao.codes!![i].isFavored
+                        )
                     )
-                )
-            }
-
-            runBlocking {
-                codeDao.insert(codes)
+                }
+                Log.d("CodeRepository", "loaded here => is not empty")
+                runBlocking {
+                    codeDao.insert(codes)
+                }
+            } else {
+                for (document in it) {
+                    codes.add(
+                        CodeEntity(
+                            id = document.id,
+                            name = document["name"].toString(),
+                            codes = document["codes"].toString(),
+                            programId = document["program_id"].toString()
+                        )
+                    )
+                }
+                Log.d("CodeRepository", "loaded here => is empty")
+                runBlocking {
+                    codeDao.insert(codes)
+                }
             }
         }
     }

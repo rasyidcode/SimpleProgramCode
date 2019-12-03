@@ -10,7 +10,9 @@ data class CodeEntity(
     val name: String,
     val codes: String,
     @ColumnInfo(name = "program_id")
-    val programId: String
+    val programId: String,
+    @ColumnInfo(name = "is_favored")
+    var isFavored: Boolean = false
 ) {
     override fun toString(): String {
         return "$id \n $name \n $codes \n $programId"

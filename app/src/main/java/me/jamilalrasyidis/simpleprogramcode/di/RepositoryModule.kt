@@ -9,5 +9,4 @@ val repositoryModule = module {
     single { ProgramRepository(get()) }
 
     single { CodeRepository(get()) }
-
 }

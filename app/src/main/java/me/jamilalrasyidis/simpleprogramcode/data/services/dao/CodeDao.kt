@@ -19,7 +19,13 @@ interface CodeDao {
     @Query("SELECT codes FROM CodeEntity WHERE program_id LIKE :programId AND name LIKE :name")
     fun getCodes(programId: String, name: String) : LiveData<String>
 
+    @Query("UPDATE CodeEntity SET is_favored = :isFavored WHERE id = :codeId")
+    suspend fun updateFavorite(isFavored: Boolean, codeId: String)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(codes: List<CodeEntity>)
+
+    @get:Query("SELECT * FROM CodeEntity")
+    val codes: List<CodeEntity>?
 
 }

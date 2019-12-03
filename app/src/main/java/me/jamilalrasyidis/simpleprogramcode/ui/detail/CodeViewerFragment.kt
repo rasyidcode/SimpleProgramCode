@@ -1,5 +1,8 @@
 package me.jamilalrasyidis.simpleprogramcode.ui.detail
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -40,7 +43,7 @@ class CodeViewerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupCodeViewer()
+//        setupCodeViewer()
         setupAction()
     }
 
@@ -57,18 +60,23 @@ class CodeViewerFragment : Fragment() {
                 binding.codeView.setOptions(getCurrentOptions(currentData[0], currentData[1]))
             }
         }
-    }
-
-    private fun setupCodeViewer() {
-        viewModel.apply {
-            currentNameAndCodeLiveData.observe(this@CodeViewerFragment, Observer {
-                currentData.clear()
-                currentData.add(it[0])
-                currentData.add(it[1])
-                binding.codeView.setOptions(getCurrentOptions(currentData[0], currentData[1]))
-            })
+        binding.btnCopy.setOnClickListener {
+            val clipboard: ClipboardManager = (activity as DetailActivity).getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("codes", currentData[1])
+            clipboard.setPrimaryClip(clip)
         }
     }
+
+//    private fun setupCodeViewer() {
+//        viewModel.apply {
+//            currentNameAndCodeLiveData.observe(this@CodeViewerFragment, Observer {
+//                currentData.clear()
+//                currentData.add(it[0])
+//                currentData.add(it[1])
+//                binding.codeView.setOptions(getCurrentOptions(currentData[0], currentData[1]))
+//            })
+//        }
+//    }
 
     private fun getCurrentOptions(name: String, codes: String): Options {
         return Options.Default.get(requireContext())
