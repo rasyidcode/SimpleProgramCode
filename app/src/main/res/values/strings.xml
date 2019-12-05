@@ -17,4 +17,6 @@
     <string name="navigation_drawer_open">Drawer Open</string>
     <string name="navigation_drawer_close">Drawer Close</string>
     <string name="current_code_generated">%1$s</string>
+    <string name="text_no_favorite">There\'s no favorite code right now!</string>
+    <string name="text_submit_code">SUBMIT CODE</string>
 </resources>

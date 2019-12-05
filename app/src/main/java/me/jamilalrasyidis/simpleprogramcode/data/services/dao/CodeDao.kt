@@ -1,11 +1,10 @@
 package me.jamilalrasyidis.simpleprogramcode.data.services.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import me.jamilalrasyidis.simpleprogramcode.data.model.entity.CodeEntity
+import me.jamilalrasyidis.simpleprogramcode.data.model.entity.CodeWithProgramEntity
+import me.jamilalrasyidis.simpleprogramcode.data.model.entity.ProgramWithCodeEntity
 
 @Dao
 interface CodeDao {
@@ -25,7 +24,13 @@ interface CodeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(codes: List<CodeEntity>)
 
-    @get:Query("SELECT * FROM CodeEntity")
-    val codes: List<CodeEntity>?
+    @Query("SELECT * FROM CodeEntity")
+    suspend fun getAllCodes() : List<CodeEntity>?
 
+    @Query("SELECT * FROM CodeEntity WHERE is_favored = :isFavored")
+    fun getAllFavorites(isFavored: Boolean = true) : LiveData<List<CodeEntity>>
+
+    @Transaction
+    @Query("SELECT * FROM ProgramEntity WHERE id = :programId")
+    fun getProgramsWithCodes(programId: String) : LiveData<ProgramWithCodeEntity>
 }

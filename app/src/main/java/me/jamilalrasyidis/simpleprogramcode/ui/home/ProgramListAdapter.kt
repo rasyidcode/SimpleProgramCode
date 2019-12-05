@@ -1,7 +1,6 @@
 package me.jamilalrasyidis.simpleprogramcode.ui.home
 
-import android.content.Intent
-import android.util.Log
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,7 +44,8 @@ class ProgramListAdapter : RecyclerView.Adapter<ProgramListAdapter.ViewHolder>()
             val ctx = binding.root.context
             binding.programTitle.text = program.title
             binding.programSubtitle.text = program.desc
-            handleInflatedWidget()
+            @SuppressLint("SetTextI18n")
+            binding.textAvailableLanguage.text = "Language : ${program.availableLanguage}"
             clickListener = object : ItemClickListener {
                 override fun onClick(view: View, position: Int, isLongClick: Boolean) {
                     ctx.startActivity(ctx.intentFor<DetailActivity>().apply {
@@ -56,43 +56,43 @@ class ProgramListAdapter : RecyclerView.Adapter<ProgramListAdapter.ViewHolder>()
             }
         }
 
-        private fun handleInflatedWidget() {
-            val scale = binding.root.resources.displayMetrics.density
-            val verticalPadding: Int = (8 * scale + 0.5f).toInt()
-            val horizontalPadding: Int = (16 * scale + 0.5f).toInt()
-            when (inflateType) {
-                InflateType.PROGRAM_LIST -> {
-                    binding.textTimeHumanReadable.visibility = View.GONE
-                    binding.programTitle.setPadding(
-                        horizontalPadding,
-                        verticalPadding,
-                        horizontalPadding,
-                        verticalPadding
-                    )
-                    binding.favIcon.visibility = View.GONE
-                }
-                InflateType.FAVORITE -> {
-                    binding.textTimeHumanReadable.visibility = View.VISIBLE
-                    binding.programTitle.setPadding(
-                        horizontalPadding,
-                        verticalPadding,
-                        horizontalPadding,
-                        verticalPadding
-                    )
-                    binding.favIcon.visibility = View.VISIBLE
-                }
-                InflateType.HISTORY -> {
-                    binding.textTimeHumanReadable.visibility = View.GONE
-                    binding.programTitle.setPadding(
-                        horizontalPadding,
-                        0,
-                        horizontalPadding,
-                        verticalPadding
-                    )
-                    binding.favIcon.visibility = View.INVISIBLE
-                }
-            }
-        }
+//        private fun handleInflatedWidget() {
+//            val scale = binding.root.resources.displayMetrics.density
+//            val verticalPadding: Int = (8 * scale + 0.5f).toInt()
+//            val horizontalPadding: Int = (16 * scale + 0.5f).toInt()
+//            when (inflateType) {
+//                InflateType.PROGRAM_LIST -> {
+//                    binding.textTimeHumanReadable.visibility = View.GONE
+//                    binding.programTitle.setPadding(
+//                        horizontalPadding,
+//                        verticalPadding,
+//                        horizontalPadding,
+//                        verticalPadding
+//                    )
+//                    binding.favIcon.visibility = View.GONE
+//                }
+//                InflateType.FAVORITE -> {
+//                    binding.textTimeHumanReadable.visibility = View.VISIBLE
+//                    binding.programTitle.setPadding(
+//                        horizontalPadding,
+//                        verticalPadding,
+//                        horizontalPadding,
+//                        verticalPadding
+//                    )
+//                    binding.favIcon.visibility = View.VISIBLE
+//                }
+//                InflateType.HISTORY -> {
+//                    binding.textTimeHumanReadable.visibility = View.GONE
+//                    binding.programTitle.setPadding(
+//                        horizontalPadding,
+//                        0,
+//                        horizontalPadding,
+//                        verticalPadding
+//                    )
+//                    binding.favIcon.visibility = View.INVISIBLE
+//                }
+//            }
+//        }
 
         override fun onClick(p0: View?) {
             clickListener?.onClick(p0!!, adapterPosition, false)

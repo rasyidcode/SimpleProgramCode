@@ -1,29 +1,23 @@
 package me.jamilalrasyidis.simpleprogramcode.ui.home
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.onNavDestinationSelected
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import me.jamilalrasyidis.simpleprogramcode.R
 import me.jamilalrasyidis.simpleprogramcode.databinding.ActivityHomeBinding
+import org.jetbrains.anko.toast
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class HomeActivity : AppCompatActivity() {
-
-    private val navController by lazy { findNavController(R.id.nav_host) }
-
-    private lateinit var appBarConfiguration: AppBarConfiguration
 
     private val binding by lazy {
         DataBindingUtil.setContentView<ActivityHomeBinding>(
@@ -46,18 +40,16 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setupDrawer()
-
-        appBarConfiguration = AppBarConfiguration(navController.graph)
         setupNavigation()
-        setupActionBar()
-
         initViewModel()
-    }
 
-    private fun setupActionBar() {
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, ProgramListFragment())
+                .commit()
+            binding.navView.setCheckedItem(R.id.program_list_screen)
+        }
     }
 
     private fun initViewModel() {
@@ -65,17 +57,56 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun setupNavigation() {
-        binding.navView.setupWithNavController(navController)
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.program_list_screen,
-                R.id.favorite_screen,
-                R.id.history_screen,
-                R.id.privacy_policy_screen,
-                R.id.send_feedback_screen
-            ),
-            binding.drawerLayout
-        )
+        binding.navView.setNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.program_list_screen -> {
+                    replaceFragment(ProgramListFragment())
+                    true
+                }
+                R.id.submit_code_screen -> {
+                    toast("Coming soon!")
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                R.id.favorite_screen -> {
+                    replaceFragment(FavoriteFragment())
+                    true
+                }
+                R.id.history_screen -> {
+                    toast("Coming soon!")
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                R.id.privacy_policy_screen -> {
+                    replaceFragment(PrivacyPolicyFragment())
+                    true
+                }
+                R.id.rate_app -> {
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("market://details?id=$packageName")
+                        )
+                    )
+                    true
+                }
+                R.id.more_apps -> {
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://play.google.com/store/apps/developer?id=RasyidCODE")
+                        )
+                    )
+                    true
+                }
+                R.id.send_feedback_screen -> {
+                    toast("Coming soon!")
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     private fun setupDrawer() {
@@ -95,16 +126,16 @@ class HomeActivity : AppCompatActivity() {
 
             override fun onDrawerClosed(drawerView: View) {
                 super.onDrawerClosed(drawerView)
-                when (navController.currentDestination?.id) {
-                    R.id.program_list_screen -> supportActionBar?.title =
+                when (supportFragmentManager.findFragmentById(R.id.fragment_container)) {
+                    is ProgramListFragment -> supportActionBar?.title =
                         "Home"
-                    R.id.favorite_screen -> supportActionBar?.title =
-                        "Favorite Program"
-                    R.id.history_screen -> supportActionBar?.title =
+                    is FavoriteFragment -> supportActionBar?.title =
+                        "Favorites"
+                    is HistoryFragment -> supportActionBar?.title =
                         "History"
-                    R.id.privacy_policy_screen -> supportActionBar?.title =
+                    is PrivacyPolicyFragment -> supportActionBar?.title =
                         "Privacy Policy"
-                    R.id.send_feedback_screen -> supportActionBar?.title =
+                    is SendFeebackFragment -> supportActionBar?.title =
                         "Send Feedback"
                 }
                 toggle.syncState()
@@ -115,15 +146,24 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return item.onNavDestinationSelected(findNavController(R.id.nav_host)) || super.onOptionsItemSelected(item)
+    private fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment)
+            .commit()
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
     }
 
     override fun onBackPressed() {
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
+        } else when {
+            supportFragmentManager.findFragmentById(R.id.fragment_container) is ProgramListFragment -> {
+                super.onBackPressed()
+            }
+            else -> {
+                replaceFragment(ProgramListFragment())
+                supportActionBar?.title = "Home"
+                binding.navView.setCheckedItem(R.id.program_list_screen)
+            }
         }
     }
 

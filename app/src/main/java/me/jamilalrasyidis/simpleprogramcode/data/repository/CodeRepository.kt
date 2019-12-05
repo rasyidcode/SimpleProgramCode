@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.runBlocking
 import me.jamilalrasyidis.simpleprogramcode.data.model.entity.CodeEntity
+import me.jamilalrasyidis.simpleprogramcode.data.model.entity.CodeWithProgramEntity
+import me.jamilalrasyidis.simpleprogramcode.data.model.entity.ProgramWithCodeEntity
 import me.jamilalrasyidis.simpleprogramcode.data.services.dao.CodeDao
 import org.koin.core.KoinComponent
 
@@ -24,6 +26,14 @@ class CodeRepository(
         return codeDao.getCodes(programId, name)
     }
 
+    fun getProgramsWithCodes(programId: String) : LiveData<ProgramWithCodeEntity> {
+        return codeDao.getProgramsWithCodes(programId)
+    }
+
+    fun getAllFavorites() : LiveData<List<CodeEntity>> {
+        return codeDao.getAllFavorites()
+    }
+
     fun getCodeByProgramId(programId: String): LiveData<List<CodeEntity>> {
         return codeDao.getCodeByProgramId(programId)
     }
@@ -34,7 +44,7 @@ class CodeRepository(
 
     suspend fun getCodes() {
         val codes = mutableListOf<CodeEntity>()
-        val codeFromDb: List<CodeEntity>? = codeDao.codes
+        val codeFromDb: List<CodeEntity>? = codeDao.getAllCodes()
 
         codeRefs.get().addOnSuccessListener {
             Log.d("CodeRepository", "data size from repo : ${it.size()}")
@@ -46,13 +56,10 @@ class CodeRepository(
                             name = it.documents[i]["name"].toString(),
                             codes = it.documents[i]["codes"].toString(),
                             programId = it.documents[i]["program_id"].toString(),
-                            isFavored = codeDao.codes!![i].isFavored
+                            isFavored = codeFromDb[i].isFavored,
+                            output = it.documents[i]["output"].toString()
                         )
                     )
-                }
-                Log.d("CodeRepository", "loaded here => is not empty")
-                runBlocking {
-                    codeDao.insert(codes)
                 }
             } else {
                 for (document in it) {
@@ -61,14 +68,15 @@ class CodeRepository(
                             id = document.id,
                             name = document["name"].toString(),
                             codes = document["codes"].toString(),
-                            programId = document["program_id"].toString()
+                            programId = document["program_id"].toString(),
+                            output = document["output"].toString()
                         )
                     )
                 }
-                Log.d("CodeRepository", "loaded here => is empty")
-                runBlocking {
-                    codeDao.insert(codes)
-                }
+            }
+
+            runBlocking {
+                codeDao.insert(codes)
             }
         }
     }

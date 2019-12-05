@@ -33,11 +33,23 @@
 
         <activity
             android:name=".ui.detail.DetailActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.detail.ViewCodeActivity"
+            android:screenOrientation="portrait" />
+        
+        <provider
+            android:authorities="${applicationId}.provider"
+            android:name=".ui.detail.GenericFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
             <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.home.HomeActivity" />
-        </activity>
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+
+        </provider>
 
     </application>
 

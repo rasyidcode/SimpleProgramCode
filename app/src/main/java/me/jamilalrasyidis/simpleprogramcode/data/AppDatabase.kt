@@ -9,7 +9,7 @@ import me.jamilalrasyidis.simpleprogramcode.data.services.dao.ProgramDao
 
 @Database(
     entities = [ProgramEntity::class, CodeEntity::class],
-    version = 6
+    version = 10
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract val programDao: ProgramDao

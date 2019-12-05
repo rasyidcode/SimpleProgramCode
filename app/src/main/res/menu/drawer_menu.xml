@@ -8,6 +8,12 @@
             android:title="@string/text_home_drawer" />
 
         <item
+            android:id="@+id/submit_code_screen"
+            android:contentDescription="@string/text_desc_favorite_drawer"
+            android:icon="@drawable/ic_code_black_24dp"
+            android:title="@string/text_submit_code" />
+
+        <item
             android:id="@+id/favorite_screen"
             android:contentDescription="@string/text_desc_favorite_drawer"
             android:icon="@drawable/ic_favorite_white_24dp"

@@ -19,11 +19,12 @@ class PrivacyPolicyFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_privacy_policy, container, false)
-        return super.onCreateView(inflater, container, savedInstanceState)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.webView.loadUrl("file:///android_asset/privacy_policy.html")
     }
 
 }

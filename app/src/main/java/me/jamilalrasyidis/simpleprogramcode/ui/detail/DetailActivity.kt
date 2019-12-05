@@ -1,6 +1,7 @@
 package me.jamilalrasyidis.simpleprogramcode.ui.detail
 
 import android.Manifest
+import android.app.Dialog
 import android.app.DownloadManager
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -13,9 +14,12 @@ import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import android.view.View
+import android.view.Window
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
@@ -27,10 +31,7 @@ import io.github.kbiakov.codeview.highlight.Font
 import me.jamilalrasyidis.simpleprogramcode.R
 import me.jamilalrasyidis.simpleprogramcode.data.model.entity.CodeEntity
 import me.jamilalrasyidis.simpleprogramcode.databinding.ActivityDetailBinding
-import me.jamilalrasyidis.simpleprogramcode.extension.convertToFileType
-import me.jamilalrasyidis.simpleprogramcode.extension.setOnTabSelected
-import me.jamilalrasyidis.simpleprogramcode.extension.toCodeFormat
-import me.jamilalrasyidis.simpleprogramcode.extension.toFileNameStyle
+import me.jamilalrasyidis.simpleprogramcode.extension.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.toast
@@ -61,6 +62,9 @@ class DetailActivity : AppCompatActivity() {
     private var currentCodes: CodeEntity? = null
 
     private var isTabExist: Boolean = false
+
+    @Suppress("DEPRECATION")
+    private val appDir by lazy { Environment.getExternalStorageDirectory().path }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,6 +109,9 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun setupAction() {
+        binding.btnPlay.setOnClickListener {
+            customDialog(currentCodes?.output!!)
+        }
         binding.btnZoomIn.setOnClickListener {
             if (currentFontSize < 18) {
                 currentFontSize++
@@ -120,7 +127,7 @@ class DetailActivity : AppCompatActivity() {
         binding.btnCopy.setOnClickListener {
             val clipboard: ClipboardManager =
                 this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("codes", currentCodes?.codes)
+            val clip = ClipData.newPlainText("codes", currentCodes?.codes?.reverseCodeFormat())
             clipboard.setPrimaryClip(clip)
 
             toast("Code copied to clipboard")
@@ -134,7 +141,7 @@ class DetailActivity : AppCompatActivity() {
             if (isStoragePermissionGranted()) {
                 generateCodeOnSD(
                     "${title?.toFileNameStyle()}${currentCodes?.name?.convertToFileType()}",
-                    currentCodes?.codes!!
+                    currentCodes?.codes!!.reverseCodeFormat()
                 )
             } else {
                 longToast("You need to give access to storage in order to get the code in file mode.")
@@ -142,18 +149,35 @@ class DetailActivity : AppCompatActivity() {
         }
         binding.btnShare.setOnClickListener {
             if (isStoragePermissionGranted()) {
-                val intentShare = Intent(Intent.ACTION_SEND)
-                intentShare.type = "file/*"
-                @Suppress("DEPRECATION")
-                intentShare.putExtra(
-                    Intent.EXTRA_STREAM,
-                    Uri.parse("file://${Environment.getExternalStorageDirectory().path + "/codes/${title?.toFileNameStyle()}${currentCodes?.name?.convertToFileType()}"}")
-                )
-                intentShare.putExtra(Intent.EXTRA_SUBJECT, "Simple Program Code")
-                intentShare.putExtra(Intent.EXTRA_TEXT, "Code")
-                startActivity(Intent.createChooser(intentShare, "Share Code"))
+                val root = File(appDir, "codes")
+                if (!root.exists()) {
+                    root.mkdirs()
+                }
+                val file = File(root, "${title?.toFileNameStyle()}${currentCodes?.name?.convertToFileType()}")
+
+                if (file.exists()) {
+                    val intentShare = Intent(Intent.ACTION_SEND)
+                    intentShare.type = "file/*"
+                    @Suppress("DEPRECATION")
+                    intentShare.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", file ))
+                    intentShare.putExtra(Intent.EXTRA_SUBJECT, "Simple Program Code")
+                    intentShare.putExtra(Intent.EXTRA_TEXT, "Code")
+                    intentShare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    startActivity(Intent.createChooser(intentShare, "Share Code"))
+                } else {
+                    longToast("File doesn't exist, please use download button first.")
+                }
             }
         }
+    }
+
+    private fun customDialog(output: String) {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+        dialog.setContentView(R.layout.dialog_code_play)
+        dialog.findViewById<TextView>(R.id.text_output_code).text = output
+        dialog.show()
     }
 
     private fun getImageResources(isFavored: Boolean): Int {
@@ -191,7 +215,7 @@ class DetailActivity : AppCompatActivity() {
     private fun generateCodeOnSD(filename: String, content: String) {
         @Suppress("DEPRECATION")
         try {
-            val root = File(Environment.getExternalStorageDirectory(), "codes")
+            val root = File(appDir, "codes")
             if (!root.exists()) {
                 root.mkdirs()
             }
@@ -202,14 +226,9 @@ class DetailActivity : AppCompatActivity() {
             writer.close()
             Snackbar.make(binding.root, "Your file saved on storage", Snackbar.LENGTH_LONG)
                 .setAction("Open File") {
-                    //                    val intent = Intent(Intent.ACTION_VIEW)
-//                    val uri = Uri.parse(Environment.getExternalStorageDirectory().path + "/codes/${title?.toFileNameStyle()}${currentCodes?.name?.convertToFileType()}")
-//                    intent.setDataAndType(uri, "file/java")
-//                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//                    this.startActivity(intent)
                     val intent = Intent(Intent.ACTION_GET_CONTENT)
                     val uri =
-                        Uri.parse(Environment.getExternalStorageDirectory().path + "/codes/${title?.toFileNameStyle()}${currentCodes?.name?.convertToFileType()}")
+                        Uri.parse(appDir + "/codes/${title?.toFileNameStyle()}${currentCodes?.name?.convertToFileType()}")
                     intent.setDataAndType(uri, "file/*")
                     intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
                     intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -257,6 +276,16 @@ class DetailActivity : AppCompatActivity() {
         } else {
             true
         }
+    }
+
+    override fun onNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     companion object {

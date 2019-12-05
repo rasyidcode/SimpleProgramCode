@@ -50,9 +50,12 @@
                 android:id="@+id/code_view"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_weight="1"
+                android:paddingBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
                 android:id="@+id/action"
@@ -68,9 +71,18 @@
                 tools:background="@android:color/black">
 
                 <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/btn_play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2.5dp"
+                    android:background="@drawable/background_action_code_view"
+                    app:srcCompat="@drawable/ic_play_arrow_green_24dp" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/btn_zoom_in"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="2.5dp"
                     android:background="@drawable/background_action_code_view"
                     app:srcCompat="@drawable/ic_zoom_in_white_24dp" />
 
@@ -78,6 +90,7 @@
                     android:id="@+id/btn_zoom_out"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="2.5dp"
                     android:background="@drawable/background_action_code_view"
                     app:srcCompat="@drawable/ic_zoom_out_white_24dp" />
 
@@ -85,6 +98,7 @@
                     android:id="@+id/btn_copy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="2.5dp"
                     android:background="@drawable/background_action_code_view"
                     app:srcCompat="@drawable/ic_content_white_black_24dp" />
 
@@ -92,6 +106,7 @@
                     android:id="@+id/btn_favorite"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="2.5dp"
                     android:background="@drawable/background_action_code_view"
                     app:srcCompat="@drawable/ic_favorite_border_white_24dp" />
 
@@ -99,6 +114,7 @@
                     android:id="@+id/btn_download"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="2.5dp"
                     android:background="@drawable/background_action_code_view"
                     app:srcCompat="@drawable/ic_file_download_black_24dp" />
 

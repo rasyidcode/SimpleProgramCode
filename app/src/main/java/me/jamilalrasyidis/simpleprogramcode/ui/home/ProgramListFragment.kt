@@ -1,5 +1,6 @@
 package me.jamilalrasyidis.simpleprogramcode.ui.home
 
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -23,6 +24,13 @@ class ProgramListFragment : Fragment() {
 
     private val adapter by lazy { ProgramListAdapter() }
 
+    @Suppress("DEPRECATION")
+    private val progressDialog by lazy {
+        (activity as HomeActivity).progressDialog("Please wait...", "Load Data Code") {
+            setProgressStyle(ProgressDialog.STYLE_SPINNER)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,7 +42,7 @@ class ProgramListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        progressDialog.show()
         setupProgramList()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
@@ -52,6 +60,8 @@ class ProgramListFragment : Fragment() {
             adapter.inflateType = InflateType.PROGRAM_LIST
 
             binding.listProgram.adapter = adapter
+
+            progressDialog.dismiss()
         })
     }
 

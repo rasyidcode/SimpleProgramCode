@@ -4,4 +4,9 @@
     <color name="colorPrimary2">#311B92</color>
     <color name="colorPrimaryDark">#6200EA</color>
     <color name="colorAccent">#FF6F00</color>
+
+    <color name="javaColor">#00E676</color>
+    <color name="kotlinColor">#E65100</color>
+    <color name="pythonColor">#0091EA</color>
+    <color name="phpColor">#FFFF00</color>
 </resources>

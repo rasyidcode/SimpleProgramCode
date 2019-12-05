@@ -5,7 +5,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.runBlocking
 import me.jamilalrasyidis.simpleprogramcode.data.model.entity.ProgramEntity
 import me.jamilalrasyidis.simpleprogramcode.data.services.dao.ProgramDao
-import me.jamilalrasyidis.simpleprogramcode.data.services.firebase.ProgramRef
 import org.koin.core.KoinComponent
 
 class ProgramRepository(
@@ -23,12 +22,12 @@ class ProgramRepository(
 
         programRef.get().addOnSuccessListener {
             for (document in it) {
-                Log.d(TAG, "id: ${document.id}")
                 programList.add(
                     ProgramEntity(
                         id = document.id,
                         title = document["title"].toString(),
-                        desc = document["desc"].toString()
+                        desc = document["desc"].toString(),
+                        availableLanguage = document["available_language"].toString()
                     )
                 )
             }
