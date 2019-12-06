@@ -19,4 +19,8 @@
     <string name="current_code_generated">%1$s</string>
     <string name="text_no_favorite">There\'s no favorite code right now!</string>
     <string name="text_submit_code">SUBMIT CODE</string>
+    <string name="text_desc_share_app">Share this App</string>
+    <string name="text_share_app_drawer">SHARE APP</string>
+    <string name="text_no_internet_connection">No internet connection</string>
+    <string name="text_please_check_your_internet_connection_and_tap_on_button_below">Please check your internet connection and tap on button below.</string>
 </resources>

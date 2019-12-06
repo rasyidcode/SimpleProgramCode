@@ -44,6 +44,12 @@
             android:title="@string/text_more_apps_drawer" />
 
         <item
+            android:id="@+id/share_apps"
+            android:contentDescription="@string/text_desc_share_app"
+            android:icon="@drawable/ic_share_black_24dp"
+            android:title="@string/text_share_app_drawer" />
+
+        <item
             android:id="@+id/send_feedback_screen"
             android:contentDescription="@string/text_desc_send_feedback_drawer"
             android:icon="@drawable/ic_mail_white_24dp"

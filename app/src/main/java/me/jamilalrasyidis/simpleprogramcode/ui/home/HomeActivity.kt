@@ -1,7 +1,11 @@
 package me.jamilalrasyidis.simpleprogramcode.ui.home
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -16,6 +20,7 @@ import me.jamilalrasyidis.simpleprogramcode.R
 import me.jamilalrasyidis.simpleprogramcode.databinding.ActivityHomeBinding
 import org.jetbrains.anko.toast
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.lang.Exception
 
 class HomeActivity : AppCompatActivity() {
 
@@ -40,6 +45,10 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.title = "Home"
+
         setupDrawer()
         setupNavigation()
         initViewModel()
@@ -99,9 +108,28 @@ class HomeActivity : AppCompatActivity() {
                     )
                     true
                 }
+                R.id.share_apps -> {
+                    try {
+                        val intentShare = Intent(Intent.ACTION_SEND)
+                        val messages =
+                            "\nYou can find a lot of code example in various language\n" +
+                                    "What are you waiting for?\n" +
+                                    "You can install it by visit the link below:\n" +
+                                    "https://play.google.com/store/apps/details?id=${packageName}"
+                        intentShare.type = "text/plain"
+                        intentShare.putExtra(
+                            Intent.EXTRA_SUBJECT,
+                            resources.getString(R.string.app_name)
+                        )
+                        intentShare.putExtra(Intent.EXTRA_TEXT, messages)
+                        startActivity(Intent.createChooser(intentShare, "Choose One"))
+                    } catch (e: Exception) {
+                        toast("Something went wrong, please try again!")
+                    }
+                    true
+                }
                 R.id.send_feedback_screen -> {
-                    toast("Coming soon!")
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    replaceFragment(SendFeedbackFragment())
                     true
                 }
                 else -> false
@@ -135,7 +163,7 @@ class HomeActivity : AppCompatActivity() {
                         "History"
                     is PrivacyPolicyFragment -> supportActionBar?.title =
                         "Privacy Policy"
-                    is SendFeebackFragment -> supportActionBar?.title =
+                    is SendFeedbackFragment -> supportActionBar?.title =
                         "Send Feedback"
                 }
                 toggle.syncState()

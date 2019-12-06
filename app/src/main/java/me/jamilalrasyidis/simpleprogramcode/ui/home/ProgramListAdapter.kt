@@ -1,17 +1,27 @@
 package me.jamilalrasyidis.simpleprogramcode.ui.home
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import me.jamilalrasyidis.simpleprogramcode.data.model.entity.ProgramEntity
 import me.jamilalrasyidis.simpleprogramcode.databinding.ItemProgramBinding
+import me.jamilalrasyidis.simpleprogramcode.extension.getSharedPreferencesName
+import me.jamilalrasyidis.simpleprogramcode.extension.isConnectedToWifi
 import me.jamilalrasyidis.simpleprogramcode.ui.ItemClickListener
 import me.jamilalrasyidis.simpleprogramcode.ui.detail.DetailActivity
 import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.progressDialog
+import org.jetbrains.anko.toast
 
 class ProgramListAdapter : RecyclerView.Adapter<ProgramListAdapter.ViewHolder>() {
+
+    private val sharedPref by lazy { context.getSharedPreferences(context.getSharedPreferencesName(), 0) }
+
+    lateinit var context: Context
 
     lateinit var inflateType: InflateType
 
@@ -48,10 +58,22 @@ class ProgramListAdapter : RecyclerView.Adapter<ProgramListAdapter.ViewHolder>()
             binding.textAvailableLanguage.text = "Language : ${program.availableLanguage}"
             clickListener = object : ItemClickListener {
                 override fun onClick(view: View, position: Int, isLongClick: Boolean) {
-                    ctx.startActivity(ctx.intentFor<DetailActivity>().apply {
-                        putExtra("programId", program.id)
-                        putExtra("programTitle", program.title)
-                    })
+                    if (sharedPref.getBoolean("firstTimeDetail", true)) {
+                        if (ctx.isConnectedToWifi()) {
+                            sharedPref.edit().putBoolean("firstTimeDetail", false).apply()
+                            ctx.startActivity(ctx.intentFor<DetailActivity>().apply {
+                                putExtra("programId", program.id)
+                                putExtra("programTitle", program.title)
+                            })
+                        } else {
+                            ctx.toast("Currently you offline")
+                        }
+                    } else {
+                        ctx.startActivity(ctx.intentFor<DetailActivity>().apply {
+                            putExtra("programId", program.id)
+                            putExtra("programTitle", program.title)
+                        })
+                    }
                 }
             }
         }

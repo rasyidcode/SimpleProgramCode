@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.runBlocking
 import me.jamilalrasyidis.simpleprogramcode.data.model.entity.CodeEntity
-import me.jamilalrasyidis.simpleprogramcode.data.model.entity.CodeWithProgramEntity
 import me.jamilalrasyidis.simpleprogramcode.data.model.entity.ProgramWithCodeEntity
 import me.jamilalrasyidis.simpleprogramcode.data.services.dao.CodeDao
 import org.koin.core.KoinComponent
@@ -47,7 +46,6 @@ class CodeRepository(
         val codeFromDb: List<CodeEntity>? = codeDao.getAllCodes()
 
         codeRefs.get().addOnSuccessListener {
-            Log.d("CodeRepository", "data size from repo : ${it.size()}")
             if (codeFromDb?.isNotEmpty()!!) {
                 for (i in 0 until it.documents.size) {
                     codes.add(

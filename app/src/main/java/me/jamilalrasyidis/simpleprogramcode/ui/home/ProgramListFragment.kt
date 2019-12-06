@@ -13,6 +13,8 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import me.jamilalrasyidis.simpleprogramcode.R
 import me.jamilalrasyidis.simpleprogramcode.databinding.FragmentProgramListBinding
+import me.jamilalrasyidis.simpleprogramcode.extension.getSharedPreferencesName
+import me.jamilalrasyidis.simpleprogramcode.extension.isConnectedToWifi
 import org.jetbrains.anko.progressDialog
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
@@ -22,7 +24,7 @@ class ProgramListFragment : Fragment() {
 
     private val viewModel by sharedViewModel<HomeViewModel>()
 
-    private val adapter by lazy { ProgramListAdapter() }
+    private val adapter by lazy { ProgramListAdapter().apply { context = (activity as HomeActivity) } }
 
     @Suppress("DEPRECATION")
     private val progressDialog by lazy {
@@ -30,6 +32,8 @@ class ProgramListFragment : Fragment() {
             setProgressStyle(ProgressDialog.STYLE_SPINNER)
         }
     }
+
+    private val sharedPref by lazy { (activity as HomeActivity).getSharedPreferences((activity as HomeActivity).getSharedPreferencesName(), 0) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,12 +47,46 @@ class ProgramListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         progressDialog.show()
-        setupProgramList()
+
+        if (sharedPref.getBoolean("first_time", true)) {
+            if ((activity as HomeActivity).isConnectedToWifi()) {
+                showListProgram(true)
+                setupProgramList()
+
+                sharedPref.edit().apply {
+                    putBoolean("first_time", false)
+                }.apply()
+            } else {
+                showListProgram(false)
+                progressDialog.dismiss()
+                binding.buttonReload.setOnClickListener {
+                    viewModel.runGetProgramsAgain()
+                    progressDialog.show()
+                    Handler().postDelayed({
+                        progressDialog.dismiss()
+                        (activity as HomeActivity).recreate()
+                    }, 3000)
+                }
+            }
+        } else {
+            showListProgram(true)
+            setupProgramList()
+        }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             Handler().postDelayed({
                 binding.swipeRefreshLayout.isRefreshing = false
             }, 3000)
+        }
+    }
+
+    private fun showListProgram(show: Boolean) {
+        return if (!show) {
+            binding.noConnectionLayout.visibility = View.VISIBLE
+            binding.swipeRefreshLayout.visibility = View.GONE
+        } else {
+            binding.swipeRefreshLayout.visibility = View.VISIBLE
+            binding.noConnectionLayout.visibility = View.GONE
         }
     }
 
