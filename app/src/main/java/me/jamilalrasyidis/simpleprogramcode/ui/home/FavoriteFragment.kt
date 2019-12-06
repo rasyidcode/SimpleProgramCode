@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.ads.AdRequest
 import me.jamilalrasyidis.simpleprogramcode.R
 import me.jamilalrasyidis.simpleprogramcode.databinding.FragmentFavoriteBinding
 import me.jamilalrasyidis.simpleprogramcode.extension.countNewLine
@@ -36,6 +37,13 @@ class FavoriteFragment : Fragment() {
         }
     }
 
+    private val adRequest by lazy {
+        AdRequest.Builder()
+            .addTestDevice(resources.getString(R.string.device_pocophone_id))
+            .addTestDevice(resources.getString(R.string.device_asus_id))
+            .build()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -49,6 +57,7 @@ class FavoriteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         progressDialog.show()
+        binding.bannerAds.loadAd(adRequest)
 
         viewModel.getAllFavorites().observe(this, Observer { codes ->
             if (codes.isNotEmpty()) {

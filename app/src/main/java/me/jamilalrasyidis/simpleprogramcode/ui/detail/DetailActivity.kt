@@ -23,6 +23,8 @@ import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.snackbar.Snackbar
 import io.github.kbiakov.codeview.adapters.Format
 import io.github.kbiakov.codeview.adapters.Options
@@ -66,8 +68,18 @@ class DetailActivity : AppCompatActivity() {
     @Suppress("DEPRECATION")
     private val appDir by lazy { Environment.getExternalStorageDirectory().path }
 
+    private val adRequest by lazy {
+        AdRequest.Builder()
+            .addTestDevice(resources.getString(R.string.device_pocophone_id))
+            .addTestDevice(resources.getString(R.string.device_asus_id))
+            .build()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        MobileAds.initialize(this) {}
+        binding.bannerAds.loadAd(adRequest)
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.title = title

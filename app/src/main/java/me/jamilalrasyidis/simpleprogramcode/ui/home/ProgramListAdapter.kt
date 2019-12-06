@@ -17,9 +17,9 @@ import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.progressDialog
 import org.jetbrains.anko.toast
 
-class ProgramListAdapter : RecyclerView.Adapter<ProgramListAdapter.ViewHolder>() {
+class ProgramListAdapter : RecyclerView.Adapter<ProgramListAdapter.ViewHolder>(), View.OnClickListener {
 
-    private val sharedPref by lazy { context.getSharedPreferences(context.getSharedPreferencesName(), 0) }
+    lateinit var itemClickListener: ItemClickListener
 
     lateinit var context: Context
 
@@ -30,6 +30,7 @@ class ProgramListAdapter : RecyclerView.Adapter<ProgramListAdapter.ViewHolder>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemProgramBinding.inflate(inflater, parent, false)
+        binding.root.setOnClickListener(this)
         return ViewHolder(binding)
     }
 
@@ -42,40 +43,19 @@ class ProgramListAdapter : RecyclerView.Adapter<ProgramListAdapter.ViewHolder>()
     }
 
     inner class ViewHolder(private val binding: ItemProgramBinding) :
-        RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+        RecyclerView.ViewHolder(binding.root) {
 
-        private var clickListener: ItemClickListener? = null
+//        private var clickListener: ItemClickListener? = null
 
-        init {
-            binding.root.setOnClickListener(this)
-        }
+//        init {
+//            binding.root.setOnClickListener(this)
+//        }
 
         fun bind(program: ProgramEntity) {
-            val ctx = binding.root.context
             binding.programTitle.text = program.title
             binding.programSubtitle.text = program.desc
             @SuppressLint("SetTextI18n")
             binding.textAvailableLanguage.text = "Language : ${program.availableLanguage}"
-            clickListener = object : ItemClickListener {
-                override fun onClick(view: View, position: Int, isLongClick: Boolean) {
-                    if (sharedPref.getBoolean("firstTimeDetail", true)) {
-                        if (ctx.isConnectedToWifi()) {
-                            sharedPref.edit().putBoolean("firstTimeDetail", false).apply()
-                            ctx.startActivity(ctx.intentFor<DetailActivity>().apply {
-                                putExtra("programId", program.id)
-                                putExtra("programTitle", program.title)
-                            })
-                        } else {
-                            ctx.toast("Currently you offline")
-                        }
-                    } else {
-                        ctx.startActivity(ctx.intentFor<DetailActivity>().apply {
-                            putExtra("programId", program.id)
-                            putExtra("programTitle", program.title)
-                        })
-                    }
-                }
-            }
         }
 
 //        private fun handleInflatedWidget() {
@@ -116,13 +96,17 @@ class ProgramListAdapter : RecyclerView.Adapter<ProgramListAdapter.ViewHolder>()
 //            }
 //        }
 
-        override fun onClick(p0: View?) {
-            clickListener?.onClick(p0!!, adapterPosition, false)
-        }
+//        override fun onClick(p0: View?) {
+//            clickListener?.onClick(p0!!, adapterPosition, false)
+//        }
     }
 
     companion object {
         const val TAG = "ProgramListAdapter"
+    }
+
+    override fun onClick(p0: View?) {
+        itemClickListener.onClick(p0!!, programList, false)
     }
 }
 

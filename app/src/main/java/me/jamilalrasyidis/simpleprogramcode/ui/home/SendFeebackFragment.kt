@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import com.google.android.gms.ads.AdRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import me.jamilalrasyidis.simpleprogramcode.R
 import me.jamilalrasyidis.simpleprogramcode.databinding.FragmentSendFeedbackBinding
@@ -32,6 +33,13 @@ class SendFeedbackFragment : Fragment() {
         }
     }
 
+    private val adRequest by lazy {
+        AdRequest.Builder()
+            .addTestDevice(resources.getString(R.string.device_pocophone_id))
+            .addTestDevice(resources.getString(R.string.device_asus_id))
+            .build()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -43,6 +51,8 @@ class SendFeedbackFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.bannerAds.loadAd(adRequest)
 
         binding.buttonSend.setOnClickListener {
             progressDialog.show()

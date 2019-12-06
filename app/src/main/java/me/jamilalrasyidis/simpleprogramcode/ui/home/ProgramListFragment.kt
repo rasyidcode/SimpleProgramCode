@@ -11,11 +11,19 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
 import me.jamilalrasyidis.simpleprogramcode.R
+import me.jamilalrasyidis.simpleprogramcode.data.model.entity.ProgramEntity
 import me.jamilalrasyidis.simpleprogramcode.databinding.FragmentProgramListBinding
 import me.jamilalrasyidis.simpleprogramcode.extension.getSharedPreferencesName
 import me.jamilalrasyidis.simpleprogramcode.extension.isConnectedToWifi
+import me.jamilalrasyidis.simpleprogramcode.ui.ItemClickListener
+import me.jamilalrasyidis.simpleprogramcode.ui.detail.DetailActivity
+import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.progressDialog
+import org.jetbrains.anko.toast
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class ProgramListFragment : Fragment() {
@@ -35,6 +43,74 @@ class ProgramListFragment : Fragment() {
 
     private val sharedPref by lazy { (activity as HomeActivity).getSharedPreferences((activity as HomeActivity).getSharedPreferencesName(), 0) }
 
+    private val adRequest by lazy {
+        AdRequest.Builder()
+            .addTestDevice(resources.getString(R.string.device_pocophone_id))
+            .addTestDevice(resources.getString(R.string.device_asus_id))
+            .build()
+    }
+
+    private val interstitialAd by lazy {
+        InterstitialAd(requireContext()).apply {
+            this.adUnitId = resources.getString(R.string.interstitial_ads_id)
+            this.adListener = object : AdListener() {
+                override fun onAdClosed() {
+                    setupInterstitialAds()
+                    navigateToDetail(programId, programTitle)
+                    super.onAdClosed()
+                }
+            }
+        }
+    }
+
+    private val itemClickListener by lazy {
+        object : ItemClickListener {
+            override fun onClick(view: View, programs: List<ProgramEntity>, isLongClick: Boolean) {
+                val itemPosition = binding.listProgram.getChildLayoutPosition(view)
+
+                programId = programs[itemPosition].id
+                programTitle = programs[itemPosition].title
+
+                var currentCounter = sharedPref.getInt("adsCounter", 0)
+                sharedPref.edit().apply {
+                    currentCounter += 1
+                    this?.putInt("adsCounter", currentCounter)
+                }.apply()
+
+                if (sharedPref.getBoolean("firstTimeDetail", true)) {
+                    if ((activity as HomeActivity).isConnectedToWifi()) {
+                        sharedPref.edit().putBoolean("firstTimeDetail", false).apply()
+
+                        if (currentCounter >= 3) {
+                            interstitialAd.show()
+
+                            sharedPref.edit().apply {
+                                this.putInt("adsCounter", 0)
+                            }.apply()
+                        } else {
+                            navigateToDetail(programId, programTitle)
+                        }
+                    } else {
+                        (activity as HomeActivity).toast("Currently you offline")
+                    }
+                } else {
+                    if (currentCounter >= 3) {
+                        interstitialAd.show()
+
+                        sharedPref.edit().apply {
+                            this.putInt("adsCounter", 0)
+                        }.apply()
+                    } else {
+                        navigateToDetail(programId, programTitle)
+                    }
+                }
+            }
+        }
+    }
+
+    private lateinit var programId: String
+    private lateinit var programTitle: String
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,6 +123,8 @@ class ProgramListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         progressDialog.show()
+        binding.bannerAds.loadAd(adRequest)
+        setupInterstitialAds()
 
         if (sharedPref.getBoolean("first_time", true)) {
             if ((activity as HomeActivity).isConnectedToWifi()) {
@@ -80,6 +158,19 @@ class ProgramListFragment : Fragment() {
         }
     }
 
+    private fun navigateToDetail(programId: String, programTitle: String) {
+        (activity as HomeActivity).startActivity((activity as HomeActivity).intentFor<DetailActivity>().apply {
+            putExtra("programId", programId)
+            putExtra("programTitle", programTitle)
+        })
+    }
+
+    private fun setupInterstitialAds() {
+        if (!interstitialAd.isLoading && !interstitialAd.isLoaded) {
+            interstitialAd.loadAd(adRequest)
+        }
+    }
+
     private fun showListProgram(show: Boolean) {
         return if (!show) {
             binding.noConnectionLayout.visibility = View.VISIBLE
@@ -96,6 +187,7 @@ class ProgramListFragment : Fragment() {
         viewModel.programs.observe(this, Observer {
             adapter.programList = it
             adapter.inflateType = InflateType.PROGRAM_LIST
+            adapter.itemClickListener = itemClickListener
 
             binding.listProgram.adapter = adapter
 

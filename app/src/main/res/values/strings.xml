@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SimpleProgramCode</string>
+    <string name="app_name">Simple Program Code</string>
     <string name="text_privacy_policy_drawer">PRIVACY POLICY</string>
     <string name="text_desc_privacy_policy_drawer">Privacy Policy</string>
     <string name="text_more_apps_drawer">MORE APPS</string>

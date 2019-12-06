@@ -3,6 +3,8 @@ package me.jamilalrasyidis.simpleprogramcode.ui.detail
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import io.github.kbiakov.codeview.adapters.Format
 import io.github.kbiakov.codeview.adapters.Options
 import io.github.kbiakov.codeview.highlight.ColorTheme
@@ -22,8 +24,19 @@ class ViewCodeActivity : AppCompatActivity() {
 
     private val language by lazy { intent.extras?.getString("language", "php") }
 
+    private val adRequest by lazy {
+        AdRequest.Builder()
+            .addTestDevice(resources.getString(R.string.device_pocophone_id))
+            .addTestDevice(resources.getString(R.string.device_asus_id))
+            .build()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        MobileAds.initialize(this) {}
+        binding.bannerAds.loadAd(adRequest)
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_view_code)
 
         setSupportActionBar(binding.toolbar)

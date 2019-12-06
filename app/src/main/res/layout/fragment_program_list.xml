@@ -13,9 +13,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:visibility="gone"
-            tools:visibility="visible"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="150dp"
@@ -25,23 +24,23 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
                 android:text="@string/text_no_internet_connection"
+                android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
                 android:text="@string/text_please_check_your_internet_connection_and_tap_on_button_below"
+                android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Caption" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/button_reload"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minHeight="0dp"
                 android:minWidth="0dp"
+                android:minHeight="0dp"
                 android:padding="8dp"
                 android:theme="@style/Widget.MaterialComponents.Button"
                 app:srcCompat="@drawable/ic_replay_white_24dp" />
@@ -51,7 +50,8 @@
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:visibility="visible">
 
             <androidx.recyclerview.widget.RecyclerView
@@ -63,6 +63,13 @@
                 tools:listitem="@layout/item_program" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/bannerAds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:adSize="BANNER"
+            app:adUnitId="@string/banner_ads_id" />
 
     </LinearLayout>
 </layout>
