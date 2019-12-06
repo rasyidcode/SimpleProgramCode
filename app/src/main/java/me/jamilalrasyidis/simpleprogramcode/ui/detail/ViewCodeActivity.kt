@@ -35,9 +35,9 @@ class ViewCodeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         MobileAds.initialize(this) {}
-        binding.bannerAds.loadAd(adRequest)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_view_code)
+        binding.bannerAds.loadAd(adRequest)
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.title = titleCode
