@@ -107,7 +107,7 @@ class DetailActivity : AppCompatActivity() {
             }
 
             updateCodeUI(codes[0])
-            updateButtonFavoriteUI(codes[0].isFavored)
+            codes[0].isFavored?.let { updateButtonFavoriteUI(it) }
 
             isTabExist = true
         }
@@ -116,13 +116,13 @@ class DetailActivity : AppCompatActivity() {
             currentCodes = codes[it?.position!!]
 
             updateCodeUI(currentCodes!!)
-            updateButtonFavoriteUI(currentCodes!!.isFavored)
+            currentCodes!!.isFavored?.let { it1 -> updateButtonFavoriteUI(it1) }
         }
     }
 
     private fun setupAction() {
         binding.btnPlay.setOnClickListener {
-            customDialog(currentCodes?.output!!)
+            customDialog(currentCodes?.output!!.toCodeFormat())
         }
         binding.btnZoomIn.setOnClickListener {
             if (currentFontSize < 18) {
@@ -145,9 +145,9 @@ class DetailActivity : AppCompatActivity() {
             toast("Code copied to clipboard")
         }
         binding.btnFavorite.setOnClickListener {
-            viewModel.updateFavorite(!(currentCodes!!.isFavored), currentCodes!!.id)
-            (it as ImageView).setImageResource(getImageResources(!(currentCodes!!.isFavored)))
-            currentCodes!!.isFavored = !currentCodes!!.isFavored
+            viewModel.updateFavorite(!(currentCodes!!.isFavored)!!, currentCodes!!.id)
+            (it as ImageView).setImageResource(getImageResources(!(currentCodes!!.isFavored)!!))
+            currentCodes!!.isFavored = !currentCodes!!.isFavored!!
         }
         binding.btnDownload.setOnClickListener {
             if (isStoragePermissionGranted()) {
@@ -165,13 +165,23 @@ class DetailActivity : AppCompatActivity() {
                 if (!root.exists()) {
                     root.mkdirs()
                 }
-                val file = File(root, "${title?.toFileNameStyle()}${currentCodes?.name?.convertToFileType()}")
+                val file = File(
+                    root,
+                    "${title?.toFileNameStyle()}${currentCodes?.name?.convertToFileType()}"
+                )
 
                 if (file.exists()) {
                     val intentShare = Intent(Intent.ACTION_SEND)
                     intentShare.type = "file/*"
                     @Suppress("DEPRECATION")
-                    intentShare.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", file ))
+                    intentShare.putExtra(
+                        Intent.EXTRA_STREAM,
+                        FileProvider.getUriForFile(
+                            this,
+                            applicationContext.packageName + ".provider",
+                            file
+                        )
+                    )
                     intentShare.putExtra(Intent.EXTRA_SUBJECT, "Simple Program Code")
                     intentShare.putExtra(Intent.EXTRA_TEXT, "Code")
                     intentShare.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

@@ -13,6 +13,6 @@ data class CodeEntity(
     @ColumnInfo(name = "program_id")
     val programId: String,
     @ColumnInfo(name = "is_favored")
-    var isFavored: Boolean = false,
+    var isFavored: Boolean? = false,
     val output: String
 )

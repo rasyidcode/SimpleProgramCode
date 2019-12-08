@@ -54,7 +54,7 @@ class CodeRepository(
                             name = it.documents[i]["name"].toString(),
                             codes = it.documents[i]["codes"].toString(),
                             programId = it.documents[i]["program_id"].toString(),
-                            isFavored = codeFromDb[i].isFavored,
+                            isFavored = codeFromDb[i].isFavored ?: false,
                             output = it.documents[i]["output"].toString()
                         )
                     )
