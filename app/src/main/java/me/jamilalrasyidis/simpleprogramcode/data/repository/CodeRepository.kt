@@ -48,16 +48,29 @@ class CodeRepository(
         codeRefs.get().addOnSuccessListener {
             if (codeFromDb?.isNotEmpty()!!) {
                 for (i in 0 until it.documents.size) {
-                    codes.add(
-                        CodeEntity(
-                            id = it.documents[i].id,
-                            name = it.documents[i]["name"].toString(),
-                            codes = it.documents[i]["codes"].toString(),
-                            programId = it.documents[i]["program_id"].toString(),
-                            isFavored = codeFromDb[i].isFavored ?: false,
-                            output = it.documents[i]["output"].toString()
+                    try {
+                        codes.add(
+                            CodeEntity(
+                                id = it.documents[i].id,
+                                name = it.documents[i]["name"].toString(),
+                                codes = it.documents[i]["codes"].toString(),
+                                programId = it.documents[i]["program_id"].toString(),
+                                isFavored = codeFromDb[i].isFavored ?: false,
+                                output = it.documents[i]["output"].toString()
+                            )
                         )
-                    )
+                    } catch (e: IndexOutOfBoundsException) {
+                        codes.add(
+                            CodeEntity(
+                                id = it.documents[i].id,
+                                name = it.documents[i]["name"].toString(),
+                                codes = it.documents[i]["codes"].toString(),
+                                programId = it.documents[i]["program_id"].toString(),
+                                isFavored = false,
+                                output = it.documents[i]["output"].toString()
+                            )
+                        )
+                    }
                 }
             } else {
                 for (document in it) {
